@@ -1,7 +1,6 @@
 import csv
 import os
 class Bank:
-    def __init__(self):
 
         # banking_info_dict = {}
     
@@ -85,46 +84,48 @@ class Bank:
     #     try
 
 
-class Add:
-   # def __init__(self):
-        # self.fieldnames = ["account_id", "frst_name", "last_name", "password", "balance_checking", "balance_savings"]
-        # self.account_id = account_id
-        # self.first_name = first_name
-        # self.last_name = last_name
-        # self.password = password
-        # self.balance_checking = balance_checking
-        # self.balance_savings = balance_savings
+class Customer:
+    #build the customer class here with it's init/constructor
 
-        
+    #customers have a name, accounts, username, password
+
+    #USe the class method decorator
+    #normally you could just call a new customer as customer = Customer(...args)
+    #but because you want to use inputs, you can just use a static method/class method decorator
+
+
     def new_customer(self):
         adding_user=input("Do you want to add new acount? (Y/N): ").upper()
         fieldnames = ["account_id", "frst_name", "last_name", "password", "balance_checking", "balance_savings"]
+         
         if adding_user == "Y":
-            account_id=10005
-            balance_checking=0
             first_name=input("Enter your first name: ")
             last_name=input("Enter your last name: ")
             password=input("Enter your password: ")
-
-            user_choice=int(input("How do you want it to be?\n1-acount for savings\n2-acount for checking\n3-scount for both"))
-            if(user_choice == 1):
-               account_id=account_id+1
-               balance_savings=int(input("Enter your savings: "))
-                new_user= { 'account_id':account_id,  'frst_name': first_name, 'last_name': last_name , 'password':password, 'balance_checking':None, 'balance_savings':balance_savings}
-            if(user_choice == 2):
-                account_id = account_id+1
-                balance_checking=int(input("Enter your checking: "))
-                new_user= { 'account_id':account_id,  'frst_name': first_name,  'last_name': last_name , 'password':password, 'balance_checking':balance_checking, 'balance_savings':None}
-            if(user_choice == 3):
-                account_id=account_id+1
-                balance_checking=int(input("Enter your checking: "))
-                balance_savings=int(input("Enter your savings: "))
-
-               new_user= { 'account_id':account_id,  'frst_name': first_name,  'last_name': last_name , 'password':password, 'balance_checking':balance_checking, 'balance_savings':balance_savings}
             
+            user_choice=int(input("How do you want it to be?\n1-acount for savings\n2-acount for checking\n3-scount for both"))
+            balance_checking = None
+            balance_savings = None
+            acount_id=10005
 
-            self.account_id=self.account_id+1
-            new_user= { 'account_id': self.account_id,  'frst_name': self.first_name,  'last_name': self.last_name , 'password':self.password, 'balance_checking':self.balance_checking, 'balance_savings':self.balance_savings}
+            if user_choice == 1:
+               account_id=account_id+1
+               balance_savings=float(input("Enter your savings: "))
+                
+            elif user_choice == 2:
+                account_id=account_id+1
+                balance_checking=float(input("Enter your checking: "))
+                
+            elif user_choice == 3 :
+                account_id=account_id+1
+                balance_checking=float(input("Enter your checking: "))
+                balance_savings=float(input("Enter your savings: "))
+            else:
+                print("Invalid input!!")
+                return
+            new_user= { 'account_id':account_id,  'frst_name': first_name,  'last_name': last_name , 'password':password, 'balance_checking':balance_checking, 'balance_savings':balance_savings}
+            
+            
             try:
                 with open("bank.csv", "a+") as csvfile:
                     writer = csv.DictWriter(csvfile, fieldnames)
