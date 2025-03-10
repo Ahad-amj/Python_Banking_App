@@ -32,17 +32,8 @@ class Bank:
         except csv.Error as e:
             print(e)
         
-        # try:
-        #     new_row = { 'account_id': '10006', 'frst_name': 'james', 'last_name': 'taylor' , 'password':'idh36%@#FGd','balance_checking':10000, 'balance_savings':10000}
-        #     with open("bank.csv", "a+") as csvfile:
-        #         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        #         writer.writerow(new_row)
-        # except csv.Error as e:
-        #     print(e)
+        
     
-    
-
-
     
    
 
@@ -55,7 +46,7 @@ class Bank:
     #normally you could just call a new customer as customer = Customer(...args)
     #but because you want to use inputs, you can just use a static method/class method decorator
 
-class Customer(Bank):
+class Customer:
     def __init__(self):
 
         bank_csv = open("bank.csv", "r")
@@ -64,7 +55,6 @@ class Customer(Bank):
         last_account_id = int(last_account[0])
         self.account_id = str(last_account_id + 1)
         self.fieldnames = ["account_id", "frst_name", "last_name", "password", "balance_checking", "balance_savings"]
-
 
     def new_customer(self):
         adding_user = input("Do you want to add new acount? (Y/N): ").upper()
@@ -77,28 +67,34 @@ class Customer(Bank):
             user_choice = int(input("How do you want it to be?\n1-acount for savings\n2-acount for checking\n3-scount for both\n"))
             balance_checking = None
             balance_savings = None
-
-            if user_choice == 1:
-               balance_savings=float(input("Enter your savings: "))
-                
-            elif user_choice == 2:
-                balance_checking=float(input("Enter your checking: "))
-                
-            elif user_choice == 3 :
-                balance_checking=float(input("Enter your checking: "))
-                balance_savings=float(input("Enter your savings: "))
-            else:
-                print("Invalid input!!")
-                return
-
-            new_user = { 'account_id':self.account_id,  'frst_name': first_name,  'last_name': last_name , 'password':password, 'balance_checking':balance_checking, 'balance_savings':balance_savings}
-           
+            repeat=True
+            while repeat:
+                try:
+                    if user_choice == 1:
+                       balance_savings=float(input("Enter your savings: "))
+                       repeat=False
+                        
+                    elif user_choice == 2:
+                        balance_checking=float(input("Enter your checking: "))
+                        repeat=False
+                        
+                    elif user_choice == 3 :
+                        balance_checking=float(input("Enter your checking: "))
+                        balance_savings=float(input("Enter your savings: "))
+                        repeat=False
+                    else:
+                        print("Invalid input!! choose between 1, 2 and 3.")
+                        return
+                except ValueError:
+                    print("Invalid input!! Please enter a valid number.")
+    
+            new_user = { 'account_id':self.account_id,  'frst_name': first_name,  'last_name': last_name , 'password':password, 'balance_checking':balance_checking, 'balance_savings':balance_savings} 
             
             try:
                 with open("bank.csv", "a+") as csvfile:
                     writer = csv.DictWriter(csvfile, fieldnames=self.fieldnames)
                     writer.writerow(new_user)
-                    print(f"New customer {first_name} {last_name} added successfully!")
+                    print(f"New customer {first_name} {last_name} added successfully with account id = {self.account_id}!")
             except csv.Error as e:
                 print(e)
         else:
@@ -107,23 +103,23 @@ class Customer(Bank):
    
 
     
-class Log(Bank):
-     def __init__(self):
-        with open("bank.csv", "r") as bank:
-            data = csv.DictReader(bank)
-            for col in data:
-                col[""]
-            self.fieldnames = ["account_id", "frst_name", "last_name", "password", "balance_checking", "balance_savings"] 
+# class Account(Bank):
+#      def __init__(self):
+#         with open("bank.csv", "r") as bank:
+#             data = csv.DictReader(bank)
+#             for col in data:
+#                 col[""]
+#             self.fieldnames = ["account_id", "frst_name", "last_name", "password", "balance_checking", "balance_savings"] 
      
-    def log_in(self):
-        user_first_name = input("Hello, welcome to the Bank!\nEnter first name: ").lower()
-        user_last_name = input("Enter last name: ").lower()
-        full_name= user_first_name+' '+user_last_name
-        if  == full_name:
-            user_password = input("Enter your password: ")
-            if user_password == self.password:
-                return f"Your account checking balance is {self.balance_checking}\nYour saving balance is {self.balance_savings} ."
-    def log_out(self):
+#     def log_in(self):
+#         user_first_name = input("Hello, welcome to the Bank!\nEnter first name: ").lower()
+#         user_last_name = input("Enter last name: ").lower()
+#         full_name= user_first_name+' '+user_last_name
+#         if  == full_name:
+#             user_password = input("Enter your password: ")
+#             if user_password == self.password:
+#                 return f"Your account checking balance is {self.balance_checking}\nYour saving balance is {self.balance_savings} ."
+#     def log_out(self):
 
 # class Operation:
 
