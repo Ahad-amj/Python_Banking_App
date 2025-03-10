@@ -25,10 +25,10 @@ class Bank:
         try: 
             with open("bank.csv", "r") as file:
                  contents = csv.DictReader(file)
-                 for row in contents:
-                     print(row) 
-                     for prop in fieldnames:
-                        print(row[prop]) 
+                #  for row in contents:
+                #      print(row) 
+                #      for prop in fieldnames:
+                #         print(row[prop]) 
         except csv.Error as e:
             print(e)
         
@@ -103,30 +103,83 @@ class Customer:
    
 
     
-# class Account(Bank):
-#      def __init__(self):
-#         with open("bank.csv", "r") as bank:
-#             data = csv.DictReader(bank)
-#             for col in data:
-#                 col[""]
-#             self.fieldnames = ["account_id", "frst_name", "last_name", "password", "balance_checking", "balance_savings"] 
-     
-#     def log_in(self):
-#         user_first_name = input("Hello, welcome to the Bank!\nEnter first name: ").lower()
-#         user_last_name = input("Enter last name: ").lower()
-#         full_name= user_first_name+' '+user_last_name
-#         if  == full_name:
-#             user_password = input("Enter your password: ")
-#             if user_password == self.password:
-#                 return f"Your account checking balance is {self.balance_checking}\nYour saving balance is {self.balance_savings} ."
-#     def log_out(self):
+class Account:
 
-# class Operation:
+    def __init__(self):
+        self.account_id = None
+        self.first_name = None
+        self.last_name = None
+        self.password = None
+        self.balance_checking = None
+        self.balance_savings = None
+        
+     
+    def log_in(self):
+        with open("bank.csv", "r") as bank:
+            data = csv.DictReader(bank)
+            check_acct_num = True
+            while check_acct_num:
+                user_account_id = input("Hello, welcome to the Bank!\nEnter account id: ")
+                for col in data:
+                    if  col["account_id"] == user_account_id:
+                        self.account_id = col["account_id"]
+                        self.first_name = col["frst_name"]
+                        self.last_name = col["last_name"]
+                        self.password = col["password"]
+                        self.balance_checking = col["balance_checking"]
+                        self.balance_savings = col["balance_savings"]
+                        check_acct_num = False
+                        break
+                    else:
+                        print("Your account id is incorrect, Try again!!")
+            check_password = True
+            while check_password:
+                user_password = input("Enter your password: ")
+                if user_password == self.password:
+                    print(f"Hello {self.first_name} {self.last_name} with the following acount id {self.account_id} !\nYour account checking balance is {self.balance_checking}\nYour saving balance is {self. balance_savings} .")
+                    check_password=False
+                else:
+                    print("Your password is invalid! Try again!")
+     
+
+    def log_out(self):
+        user_log_out=input("Do you want to log out? (Y/N): ").upper()
+        if user_log_out == "Y":
+            print("You have been logged out!\nHave a nice day!")
+        # elif user_log_out == "N":
+            
+        
+        else:
+            print("Invalid input! Please choose (Y/N).")
+
+
+
+
+class Operation(Account):
+    def __init__(self):
+    
+
+    def withdraw(self):
+        user_withdraw=input("Do you want to withdraw from savings or checking balance? 1- withdraw from saving balance\n2- withdraw from checking balance\n")
+        user_withdraw_amount=float(input("How much money do you want to withdraw?"))
+
+        # if user_withdraw == 1 and user_withdraw_amount<
+
+  
+
+            
+        
+        
+
 
 
         
 
-new=Customer()
-new.new_customer()
+
 # new_file = Bank()
 # print(new_file)
+# new=Customer()
+# new.new_customer()
+account = Account()  
+# account.log_in()
+account.log_out()
