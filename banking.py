@@ -150,9 +150,9 @@ class Account:
                     elif user_oper == 2:
                         operation=Operation(self)
                         operation.deposite()
-                    # elif user_oper == 3:
-                    #     operation=Operation(self)
-                    #     operation.transfer()
+                    elif user_oper == 3:
+                        operation=Operation(self)
+                        operation.transfer()
                     elif user_oper == 4:
                         print("You have been logged out!\nHave a nice day!")
                         oper_choice = False
@@ -221,6 +221,7 @@ class Operation:
 
         try:
             user_deposite=int(input("Do you want to deposite money to savings or checking balance?\n1- deposite to saving balance\n2- deposite to checking balance\n"))
+
             if user_deposite == 1 or user_deposite == 2:
                 user_deposite_amount=float(input("How much money do you want to deposite? "))
 
@@ -238,8 +239,38 @@ class Operation:
                 print("Invalid number! Please enter 1 or 2")
         except ValueError:
                     print("Invalid input!! Please enter a valid number.")
-    #  def transfer(self):
+    
+    def transfer(self):
+        user_transfer = input("Enter the acount id you want to deposite to: ")
+        if self.account.account_id == user_transfer:
+            try:
+                user_trans = int(input("Choose the account type that you want to transfer to\n1- saving\n2- checking\n"))
+                trans_amount = float(input("How much money do you want to transfer? "))
 
+                if self.account.balance_savings is not None and self.account.balance_checking is not None:
+                    if user_trans == 1:
+                        self.account.balance_savings += trans_amount
+                        self.account.balance_checking -= trans_amount
+
+                        print(f"you have successfully transfer {trans_amount} from checking to saving\nYour acount now has {self.account.balance_savings} in saving balance\n{self.account.balance_checking} in checking.")
+                        self.update_new_balance()
+
+                    elif user_trans == 2:
+                        self.account.balance_checking += trans_amount
+                        self.account.balance_savings -= trans_amount
+
+                        print(f"you have successfully transfer {trans_amount} from saving to checking\nYour acount now has {self.account.balance_savings} in saving balance\n{self.account.balance_checking} in checking.")
+                        self.update_new_balance()
+                    else:
+                        print("Invalid input choose 1 or 2")
+
+            except ValueError:
+                    print("Invalid input!! Please enter a valid number.")
+
+            
+            
+
+        
     def update_new_balance(self):
         updated = []
         with open("bank.csv", "r") as bank:
@@ -261,9 +292,5 @@ class Operation:
 
 
 
-  
-
-
 customer=Customer()
 customer.new_customer()
-
