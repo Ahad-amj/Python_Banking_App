@@ -53,50 +53,51 @@ class Customer:
         self.fieldnames = ["account_id", "frst_name", "last_name", "password", "balance_checking", "balance_savings"]
 
     def new_customer(self):
-        adding_user = input("Do you want to add new acount? (Y/N): ").upper()
-         
-        if adding_user == "Y":
+        try:
+            user_response=int(input("Hello! Welcome to the Bank\nChoose 1 or 2:\n1- Log in\n2- Create an account\n"))
+            if user_response == 1:
+                user_acc=Account()
+                user_acc.log_in()
 
-            first_name = input("Enter your first name: ")
-            last_name = input("Enter your last name: ")
-            password = input("Enter your password: ")
-            user_choice = int(input("How do you want it to be?\n1-acount for savings\n2-acount for checking\n3-acount for both\n"))
+            elif user_response == 2:
 
-            balance_checking = None
-            balance_savings = None
+                first_name = input("Enter your first name: ")
+                last_name = input("Enter your last name: ")
+                password = input("Enter your password: ")
+                user_choice = int(input("How do you want it to be?\n1-acount for savings\n2-acount for checking\n3-acoun  for both\n")) 
+                balance_checking = None
+                balance_savings = None   
+                repeat=True
+                while repeat:
+                    try:
+                        if user_choice == 1:
+                           balance_savings=float(input("Enter you savings:   "))
+                           repeat=False  
+                        elif user_choice == 2:
+                            balance_checking=float(input("Enter you checking:  "))
+                            repeat=False 
+                        elif user_choice == 3 :
+                            balance_checking=float(input("Enter your checking:  "))
+                            balance_savings=float(input("Enter your savings:  "))
+                            repeat=False
+                        else:
+                            print("Invalid input!! choose between 1, and 3.")
+                            return
+                    except ValueError:
+                        print("Invalid input!! Please enter a vali  number.") 
 
-            repeat=True
-            while repeat:
-                try:
-                    if user_choice == 1:
-                       balance_savings=float(input("Enter your savings: "))
-                       repeat=False
-                        
-                    elif user_choice == 2:
-                        balance_checking=float(input("Enter your checking: "))
-                        repeat=False
-                        
-                    elif user_choice == 3 :
-                        balance_checking=float(input("Enter your checking: "))
-                        balance_savings=float(input("Enter your savings: "))
-                        repeat=False
-                    else:
-                        print("Invalid input!! choose between 1, 2 and 3.")
-                        return
-                except ValueError:
+                    new_user = { 'account_id':self.account_id, 'frst_name': first_name,  'last_name': last_name ,'password':password, 'balance_checking':balance_checking,'balance_savings':balance_savings} 
+                    try:
+                        with open("bank.csv", "a+") as csvfile:
+                            writer = csv.DictWriter(csvfile, fieldnames=self.fieldnames)
+                            writer.writerow(new_user)
+                            print(f"New customer {first_name} {last_name} added successfully with account id = {self.account_id}!")
+                    except csv.Error as e:
+                        print(e)     
+            else:
+                print("Invalid input! Please choose 1 or 2")
+        except ValueError:
                     print("Invalid input!! Please enter a valid number.")
-    
-            new_user = { 'account_id':self.account_id,  'frst_name': first_name,  'last_name': last_name , 'password':password, 'balance_checking':balance_checking, 'balance_savings':balance_savings} 
-            
-            try:
-                with open("bank.csv", "a+") as csvfile:
-                    writer = csv.DictWriter(csvfile, fieldnames=self.fieldnames)
-                    writer.writerow(new_user)
-                    print(f"New customer {first_name} {last_name} added successfully with account id = {self.account_id}!")
-            except csv.Error as e:
-                print(e)
-        else:
-            print("Have a nice day!")
 
 
     
@@ -142,7 +143,7 @@ class Account:
                 oper_choice = True
                 while oper_choice:
 
-                    user_oper=int(input("Do you want to do any operation\nChoose one of these:\n1- withdraw\n2- deposite\n3-transfer\n4- log out\n"))
+                    user_oper=int(input("Do you want to do any operation?\nChoose one of these:\n1- withdraw\n2- deposite\n3-transfer\n4- log out\n"))
                     if user_oper == 1:
                         operation=Operation(self)
                         operation.withdraw()
@@ -167,7 +168,7 @@ class Account:
 
 
 class Operation:
-    def __init__(self, acount):
+    def __init__(self, account):
         self.account = account
         self.fieldnames = ["account_id", "frst_name", "last_name", "password", "balance_checking", "balance_savings"]
        
@@ -183,10 +184,12 @@ class Operation:
                         if self.account.balance_savings > 0:
                             self.account.balance_savings -= user_withdraw_amount
                             print(f"Withdraw {user_withdraw_amount} from saving. Your new saving balance now is {self.account.balance_savings} .")
+                            self.update_new_balance()
                         else:
                             self.account.balance_savings -= user_withdraw_amount
                             self.account.balance_savings -= 35
                             print(f"Withdraw {user_withdraw_amount} from saving.Your acount balance is negative you will get a fee of 35. Your new saving balance now is {self.account.balance_savings} .")
+                            self.update_new_balance()
 
                     else:
                         print("You can't withdraw more that 100")
@@ -197,10 +200,12 @@ class Operation:
                         if self.account.balance_checking > 0:
                             self.account.balance_checking -= user_withdraw_amount
                             print(f"Withdraw {user_withdraw_amount} from checking. Your new checking balance now is {self.account.balance_checking} .")
+                            self.update_new_balance()
                         else:
                             self.account.balance_checking -= user_withdraw_amount
                             self.account.balance_checking -= 35
                             print(f"Withdraw {user_withdraw_amount} from checking.Your acount balance is negative you will get a fee of 35. Your new checking balance now is {self.account.balance_checking} .")
+                            self.update_new_balance()
                     else:
                         print("You can't withdraw more that 100")
                 else:
@@ -222,54 +227,43 @@ class Operation:
                 if user_deposite == 1 and self.account.balance_savings is not None:
                     self.account.balance_savings += user_deposite_amount
                     print(f"Deposite {user_deposite_amount} to saving. Your new saving balance now is {self.account.balance_savings} .")
-                    # self.update_new_balance()
+                    self.update_new_balance()
                 elif user_deposite == 2 and self.account.balance_checking is not None:
                     self.account.balance_checking += user_deposite_amount
                     print(f"Deposite {user_deposite_amount} to checking. Your new checking balance now is {self.account.balance_checking} .")
+                    self.update_new_balance()
                 else:
                     print("Invalid account type!")
             else:
                 print("Invalid number! Please enter 1 or 2")
         except ValueError:
                     print("Invalid input!! Please enter a valid number.")
-    # def transfer(self):
+    #  def transfer(self):
 
-    # def update_new_balance(self):
-    #     updated = []
-    #     with open("bank.csv", "r") as bank:
-    #         data = csv.DictReader(bank)
-    #         for col in data:
-    #             if col["account_id"] == self.account.account_id:
-    #                 col["balance_savings"] == self.account.balance_savings
-    #                 col["balance_checking"] == self.account.balance_checking
-                
-    #             updated.append(col)
+    def update_new_balance(self):
+        updated = []
+        with open("bank.csv", "r") as bank:
+            data = csv.DictReader(bank)
+            for col in data:
+                if col["account_id"] == self.account.account_id:
+                    col["balance_savings"] = str(self.account.balance_savings)
+                    col["balance_checking"] = str(self.account.balance_checking)
+                updated.append(col)
 
-    #     with open("bank.csv", "w") as bank:
-    #         writer = csv.DictWriter(bank,fieldnames=self.fieldnames)
-    #         writer.writeheader()
-    #         writer.writerows(updated)
+        with open("./bank.csv", 'w', newline='') as csvfile:
+            try:
+                writer = csv.DictWriter(csvfile, fieldnames=self.fieldnames)
+                writer.writeheader()
+                for row in updated:
+                    writer.writerow(row)
+            except csv.Error as e:
+                print(e)
 
 
-
-            
 
   
 
-            
-        
-        
 
+customer=Customer()
+customer.new_customer()
 
-
-        
-
-
-# new_file = Bank()
-# print(new_file)
-# new=Customer()
-# new.new_customer()
-account = Account()  
-account.log_in()
-# oper=Operation()
-# oper.withdraw()
