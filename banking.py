@@ -137,12 +137,12 @@ class Account:
                     check_password=False
                 else:
                     print("Your password is invalid! Try again!")
-
+            
             try:
+                oper_choice = True
+                while oper_choice:
 
-                user_operation = input("Do you want to do any operation? (Y/N): ").upper()
-                if user_operation == "Y":
-                    user_oper=int(input("Choose one of these:\n1- withdraw\n2- deposite\n3- transfer\n"))
+                    user_oper=int(input("Do you want to do any operation\nChoose one of these:\n1- withdraw\n2- deposite\n3-transfer\n4- log out\n"))
                     if user_oper == 1:
                         operation=Operation(self)
                         operation.withdraw()
@@ -152,25 +152,17 @@ class Account:
                     # elif user_oper == 3:
                     #     operation=Operation(self)
                     #     operation.transfer()
+                    elif user_oper == 4:
+                        print("You have been logged out!\nHave a nice day!")
+                        oper_choice = False
+                    
                     else:
                         print("Invalid input choose between 1, 2 and 3")
-                else:
-                    print("Have a nice day!")
+                
             except ValueError:
                     print("Invalid input!! Please enter a valid number.")
 
-    
-
-    def log_out(self):
-        user_log_out=input("Do you want to log out? (Y/N): ").upper()
-        if user_log_out == "Y":
-            print("You have been logged out!\nHave a nice day!")
-        # elif user_log_out == "N":
-            
         
-        else:
-            print("Invalid input! Please choose (Y/N).")
-
 
 
 
@@ -179,7 +171,6 @@ class Operation:
         self.account = account
         self.fieldnames = ["account_id", "frst_name", "last_name", "password", "balance_checking", "balance_savings"]
        
-
 
     def withdraw(self):
         try:
@@ -231,6 +222,7 @@ class Operation:
                 if user_deposite == 1 and self.account.balance_savings is not None:
                     self.account.balance_savings += user_deposite_amount
                     print(f"Deposite {user_deposite_amount} to saving. Your new saving balance now is {self.account.balance_savings} .")
+                    # self.update_new_balance()
                 elif user_deposite == 2 and self.account.balance_checking is not None:
                     self.account.balance_checking += user_deposite_amount
                     print(f"Deposite {user_deposite_amount} to checking. Your new checking balance now is {self.account.balance_checking} .")
@@ -242,14 +234,23 @@ class Operation:
                     print("Invalid input!! Please enter a valid number.")
     # def transfer(self):
 
-    def update_new_balance(self):
-        with open("bank.csv", "r") as bank:
-            data = csv.DictReader(bank)
-            for col in data:
-                if  col["account_id"] == self.account.account_id:
-                    col["balance_savings"] == self.account.balance_savings
-                    col["balance_checking"] == self.account.balance_checking
-                break
+    # def update_new_balance(self):
+    #     updated = []
+    #     with open("bank.csv", "r") as bank:
+    #         data = csv.DictReader(bank)
+    #         for col in data:
+    #             if col["account_id"] == self.account.account_id:
+    #                 col["balance_savings"] == self.account.balance_savings
+    #                 col["balance_checking"] == self.account.balance_checking
+                
+    #             updated.append(col)
+
+    #     with open("bank.csv", "w") as bank:
+    #         writer = csv.DictWriter(bank,fieldnames=self.fieldnames)
+    #         writer.writeheader()
+    #         writer.writerows(updated)
+
+
 
             
 
@@ -270,6 +271,5 @@ class Operation:
 # new.new_customer()
 account = Account()  
 account.log_in()
-# account.log_out()
 # oper=Operation()
 # oper.withdraw()
