@@ -154,6 +154,8 @@ class Account:
                     #     operation.transfer()
                     else:
                         print("Invalid input choose between 1, 2 and 3")
+                else:
+                    print("Have a nice day!")
             except ValueError:
                     print("Invalid input!! Please enter a valid number.")
 
@@ -182,18 +184,38 @@ class Operation:
     def withdraw(self):
         try:
             user_withdraw=int(input("Do you want to withdraw from savings or checking balance?\n1- withdraw from saving balance\n2- withdraw from checking balance\n"))
-            user_withdraw_amount=float(input("How much money do you want to withdraw? "))
+            if user_withdraw == 1 or user_withdraw == 2:
+                user_withdraw_amount=float(input("How much money do you want to withdraw? "))
     
-            if user_withdraw == 1 and user_withdraw_amount <= 100 and self.account.balance_savings is not None:
-                self.account.balance_savings -= user_withdraw_amount
-                # if self.balance_savings < 0:
-                #     self.balance_savings -= user_withdraw_amount
-            elif user_withdraw == 2 and user_withdraw_amount <= 100 and self.account.balance_checking is not None:
-                self.account.balance_checking -= user_withdraw_amount
-                # if self.balance_checking < 0:
-                #     self.balance_checking -= user_withdraw_amount
+                if user_withdraw == 1 and self.account.balance_savings is not None:
+                    if user_withdraw_amount <= 100:
+                        if self.account.balance_savings > 0:
+                            self.account.balance_savings -= user_withdraw_amount
+                            print(f"Withdraw {user_withdraw_amount} from saving. Your new saving balance now is {self.account.balance_savings} .")
+                        else:
+                            self.account.balance_savings -= user_withdraw_amount
+                            self.account.balance_savings -= 35
+                            print(f"Withdraw {user_withdraw_amount} from saving.Your acount balance is negative you will get a fee of 35. Your new saving balance now is {self.account.balance_savings} .")
+
+                    else:
+                        print("You can't withdraw more that 100")
+
+
+                elif user_withdraw == 2 and self.account.balance_checking is not None:
+                    if user_withdraw_amount <= 100:
+                        if self.account.balance_checking > 0:
+                            self.account.balance_checking -= user_withdraw_amount
+                            print(f"Withdraw {user_withdraw_amount} from checking. Your new checking balance now is {self.account.balance_checking} .")
+                        else:
+                            self.account.balance_checking -= user_withdraw_amount
+                            self.account.balance_checking -= 35
+                            print(f"Withdraw {user_withdraw_amount} from checking.Your acount balance is negative you will get a fee of 35. Your new checking balance now is {self.account.balance_checking} .")
+                    else:
+                        print("You can't withdraw more that 100")
+                else:
+                    print("The user does not have an acount")
             else:
-                print("You have this massage because one of the following reasons!\nnot choosing between 1 or 2\nthe user does not have either saving or checking acount\nyou can't withdraw more that 100.")
+                print("Invalid input choose 1 or 2")
        
         except ValueError:
                     print("Invalid input!! Please enter a valid number.")
@@ -246,8 +268,8 @@ class Operation:
 # print(new_file)
 # new=Customer()
 # new.new_customer()
-# account = Account()  
-# account.log_in()
+account = Account()  
+account.log_in()
 # account.log_out()
 # oper=Operation()
 # oper.withdraw()
