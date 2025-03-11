@@ -53,6 +53,7 @@ class Customer:
         self.fieldnames = ["account_id", "frst_name", "last_name", "password", "balance_checking", "balance_savings"]
 
     def new_customer(self):
+        
         try:
             user_response=int(input("Hello! Welcome to the Bank\nChoose 1 or 2:\n1- Log in\n2- Create an account\n"))
             if user_response == 1:
@@ -104,6 +105,7 @@ class Customer:
 class Account:
 
     def __init__(self):
+
         self.account_id = None
         self.first_name = None
         self.last_name = None
@@ -113,6 +115,7 @@ class Account:
         
      
     def log_in(self):
+
         with open("bank.csv", "r") as bank:
             data = csv.DictReader(bank)
             check_acct_num = True
@@ -143,7 +146,7 @@ class Account:
                 oper_choice = True
                 while oper_choice:
 
-                    user_oper=int(input("Do you want to do any operation?\nChoose one of these:\n1- withdraw\n2- deposite\n3-transfer\n4- log out\n"))
+                    user_oper=int(input("Do you want to do any operation?\nChoose one of these:\n1- withdraw\n2- deposite\n3- transfer\n4- log out\n"))
                     if user_oper == 1:
                         operation=Operation(self)
                         operation.withdraw()
@@ -169,11 +172,13 @@ class Account:
 
 class Operation:
     def __init__(self, account):
+
         self.account = account
         self.fieldnames = ["account_id", "frst_name", "last_name", "password", "balance_checking", "balance_savings"]
        
 
     def withdraw(self):
+
         try:
             user_withdraw=int(input("Do you want to withdraw from savings or checking balance?\n1- withdraw from saving balance\n2- withdraw from checking balance\n"))
             if user_withdraw == 1 or user_withdraw == 2:
@@ -241,6 +246,7 @@ class Operation:
                     print("Invalid input!! Please enter a valid number.")
     
     def transfer(self):
+
         user_transfer = input("Enter the acount id you want to deposite to: ")
         if self.account.account_id == user_transfer:
             try:
@@ -252,17 +258,19 @@ class Operation:
                         self.account.balance_savings += trans_amount
                         self.account.balance_checking -= trans_amount
 
-                        print(f"you have successfully transfer {trans_amount} from checking to saving\nYour acount now has {self.account.balance_savings} in saving balance\n{self.account.balance_checking} in checking.")
+                        print(f"you have successfully transfer {trans_amount} from checking account to saving account\nYour acount now has {self.account.balance_savings} in saving balance\n{self.account.balance_checking} in checking account.")
                         self.update_new_balance()
 
                     elif user_trans == 2:
                         self.account.balance_checking += trans_amount
                         self.account.balance_savings -= trans_amount
 
-                        print(f"you have successfully transfer {trans_amount} from saving to checking\nYour acount now has {self.account.balance_savings} in saving balance\n{self.account.balance_checking} in checking.")
+                        print(f"you have successfully transfer {trans_amount} from saving account to checking account\nYour acount now has {self.account.balance_savings} in saving balance\n{self.account.balance_checking} in checking account.")
                         self.update_new_balance()
                     else:
-                        print("Invalid input choose 1 or 2")
+                        print("Invalid input!! Please choose 1 or 2")
+                else:
+                    print("You just have one account\nYou can not transfer to yourself")
 
             except ValueError:
                     print("Invalid input!! Please enter a valid number.")
