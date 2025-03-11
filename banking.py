@@ -1,11 +1,12 @@
 import csv
 import os
 
+
 def convert_acct_balance_info(info):
-    if type(info) == "int":
-        return float(info)
-    else:
-        return None
+    try:
+        return float(info)  
+    except ValueError:
+        return None  
 
 class Bank:
     
@@ -132,7 +133,7 @@ class Account:
             while check_password:
                 user_password = input("Enter your password: ")
                 if user_password == self.password:
-                    print(f"Hello {self.first_name} {self.last_name} with the following acount id {self.account_id} !\nYour account checking balance is {str(self.balance_checking)}\nYour saving balance is {str(self.balance_savings)} .")
+                    print(f"Hello {self.first_name} {self.last_name} with the following acount id {self.account_id} !\nYour account checking balance is {self.balance_checking}\nYour saving balance is {self.balance_savings} .")
                     check_password=False
                 else:
                     print("Your password is invalid! Try again!")
@@ -141,7 +142,7 @@ class Account:
 
                 user_operation = input("Do you want to do any operation? (Y/N): ").upper()
                 if user_operation == "Y":
-                    user_oper=int(input("Choose one of these:\n1- withdraw\n2- deposite\n3- transfer"))
+                    user_oper=int(input("Choose one of these:\n1- withdraw\n2- deposite\n3- transfer\n"))
                     if user_oper == 1:
                         operation=Operation(self)
                         operation.withdraw()
@@ -156,12 +157,7 @@ class Account:
             except ValueError:
                     print("Invalid input!! Please enter a valid number.")
 
-
-
-
-            
-            
-     
+    
 
     def log_out(self):
         user_log_out=input("Do you want to log out? (Y/N): ").upper()
@@ -179,21 +175,20 @@ class Account:
 class Operation:
     def __init__(self, acount):
         self.account = account
-        # with open("bank.csv", "r") as bank:
-        #     data = csv.DictReader(bank)
-
+        self.fieldnames = ["account_id", "frst_name", "last_name", "password", "balance_checking", "balance_savings"]
+       
 
 
     def withdraw(self):
         try:
-            user_withdraw=int(input("Do you want to withdraw from savings or checking balance? 1- withdraw from saving balance\n2- withdraw from checking balance\n"))
+            user_withdraw=int(input("Do you want to withdraw from savings or checking balance?\n1- withdraw from saving balance\n2- withdraw from checking balance\n"))
             user_withdraw_amount=float(input("How much money do you want to withdraw? "))
     
-            if user_withdraw == 1 and user_withdraw_amount <= 100 and self.account.balance_savings != None:
+            if user_withdraw == 1 and user_withdraw_amount <= 100 and self.account.balance_savings is not None:
                 self.account.balance_savings -= user_withdraw_amount
                 # if self.balance_savings < 0:
                 #     self.balance_savings -= user_withdraw_amount
-            elif user_withdraw == 2 and user_withdraw_amount <= 100 and self.account.balance_checking != None:
+            elif user_withdraw == 2 and user_withdraw_amount <= 100 and self.account.balance_checking is not None:
                 self.account.balance_checking -= user_withdraw_amount
                 # if self.balance_checking < 0:
                 #     self.balance_checking -= user_withdraw_amount
@@ -207,18 +202,34 @@ class Operation:
     def deposite(self):
 
         try:
-            user_deposite=int(input("Do you want to deposite money to savings or checking balance? 1- deposite to saving balance\n2- deposite to checking balance\n"))
-            user_deposite_amount=float(input("How much money do you want to deposite? "))
+            user_deposite=int(input("Do you want to deposite money to savings or checking balance?\n1- deposite to saving balance\n2- deposite to checking balance\n"))
+            if user_deposite == 1 or user_deposite == 2:
+                user_deposite_amount=float(input("How much money do you want to deposite? "))
 
-            if user_deposite == 1 and self.account.balance_savings != None:
-                self.account.balance_savings += user_deposite_amount
-            if user_deposite == 2 and self.account.balance_checking != None:
-                self.account.balance_checking += user_deposite_amount
+                if user_deposite == 1 and self.account.balance_savings is not None:
+                    self.account.balance_savings += user_deposite_amount
+                    print(f"Deposite {user_deposite_amount} to saving. Your new saving balance now is {self.account.balance_savings} .")
+                elif user_deposite == 2 and self.account.balance_checking is not None:
+                    self.account.balance_checking += user_deposite_amount
+                    print(f"Deposite {user_deposite_amount} to checking. Your new checking balance now is {self.account.balance_checking} .")
+                else:
+                    print("Invalid account type!")
             else:
                 print("Invalid number! Please enter 1 or 2")
         except ValueError:
                     print("Invalid input!! Please enter a valid number.")
     # def transfer(self):
+
+    def update_new_balance(self):
+        with open("bank.csv", "r") as bank:
+            data = csv.DictReader(bank)
+            for col in data:
+                if  col["account_id"] == self.account.account_id:
+                    col["balance_savings"] == self.account.balance_savings
+                    col["balance_checking"] == self.account.balance_checking
+                break
+
+            
 
   
 
@@ -235,8 +246,8 @@ class Operation:
 # print(new_file)
 # new=Customer()
 # new.new_customer()
-account = Account()  
-account.log_in()
+# account = Account()  
+# account.log_in()
 # account.log_out()
 # oper=Operation()
 # oper.withdraw()
