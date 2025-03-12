@@ -43,6 +43,7 @@ class Bank:
         
 
 class Customer:
+
     def __init__(self):
 
         bank_csv = open("bank.csv", "r")
@@ -66,20 +67,24 @@ class Customer:
                 last_name = input("Enter your last name: ")
                 password = input("Enter your password: ")
                 user_choice = int(input("How do you want it to be?\n1-acount for savings\n2-acount for checking\n3-acoun  for both\n")) 
+
                 balance_checking = None
-                balance_savings = None   
+                balance_savings = None  
+
                 repeat=True
                 while repeat:
                     try:
                         if user_choice == 1:
-                           balance_savings=float(input("Enter you savings:   "))
+                           balance_savings = float(input("Enter you savings:   "))
                            repeat=False  
+
                         elif user_choice == 2:
-                            balance_checking=float(input("Enter you checking:  "))
+                            balance_checking = float(input("Enter you checking:  "))
                             repeat=False 
+
                         elif user_choice == 3 :
-                            balance_checking=float(input("Enter your checking:  "))
-                            balance_savings=float(input("Enter your savings:  "))
+                            balance_checking = float(input("Enter your checking:  "))
+                            balance_savings = float(input("Enter your savings:  "))
                             repeat=False
                         else:
                             print("Invalid input!! choose between 1, and 3.")
@@ -88,6 +93,7 @@ class Customer:
                         print("Invalid input!! Please enter a vali  number.") 
 
                     new_user = { 'account_id':self.account_id, 'frst_name': first_name,  'last_name': last_name ,'password':password, 'balance_checking':balance_checking,'balance_savings':balance_savings, 'account_status':'active','count_overdraft':0} 
+
                     try:
                         with open("bank.csv", "a+") as csvfile:
                             writer = csv.DictWriter(csvfile, fieldnames=self.fieldnames)
@@ -137,6 +143,7 @@ class Account:
                         break
                 if check_acct_num:
                     print("Your account id is incorrect, Try again!!")
+
             check_password = True
             while check_password:
                 user_password = input("Enter your password: ")
@@ -152,15 +159,19 @@ class Account:
                 while oper_choice:
 
                     user_oper=int(input("Do you want to do any operation?\nChoose one of these:\n1- withdraw\n2- deposite\n3- transfer\n4- log out\n"))
+
                     if user_oper == 1:
                         operation=Operation(self)
                         operation.withdraw()
+
                     elif user_oper == 2:
                         operation=Operation(self)
                         operation.deposite()
+
                     elif user_oper == 3:
                         operation=Operation(self)
                         operation.transfer()
+
                     elif user_oper == 4:
                         print("You have been logged out!\nHave a nice day!")
                         oper_choice = False
@@ -324,20 +335,27 @@ class Operation:
                         if col["account_id"] == user_transfer:
                             self.first_name = col["frst_name"]
                             self.last_name = col["last_name"]
+                            self.account_id = user_transfer
                             self.balance_checking = convert_acct_balance_info(col["balance_checking"])
                             break
+
+
                     user_trans_others = int(input("Choose the account type that you want to do the transfer by\n1-  saving\n2- checking\n"))
                     amount_to_others = float(input("How much money do you want to transfer? "))
+
                     if user_trans_others == 1 or user_trans_others == 2:
+
                         if user_trans_others == 1 and self.account.balance_savings is not None:
                             self.balance_checking += amount_to_others
                             self.account.balance_savings -= amount_to_others
+
                             print(f"you have successfully transfer {amount_to_others} from your saving account to {self.  first_name} {self.last_name} account!\nYour acount now has {self.account.balance_savings} in  saving balance.")
                             print(f"{self.first_name} {self.last_name} account now has {self.balance_checking} in checking balance.")
 
                         elif user_trans_others == 2 and self.account.balance_checking is not None:
                             self.balance_checking += amount_to_others
                             self.account.balance_checking -= amount_to_others
+
                             print(f"you have successfully transfer {amount_to_others} from your checking account to {self.first_name} {self.last_name} account!\nYour acount now has {self.account.balance_checking} in checking balance.")
                             print(f"{self.first_name} {self.last_name} account now has {self.balance_checking} in checking balance.")
 
@@ -347,9 +365,10 @@ class Operation:
                         self.update_new_balance()
 
                     else:
-                        print("Invalid input!! Please choose 1 or 2")    
-            except ValueError:
-                    print("Invalid input!! Please enter a valid number.")
+                        print("Invalid input!! Please choose 1 or 2")
+
+            except ValueError:            
+                print("Invalid input!! Please enter a valid number.")
                           
 
         
@@ -364,6 +383,10 @@ class Operation:
                     col["account_status"] = self.account.account_status 
                     col["count_overdraft"] = self.account.count_overdraft 
                 updated.append(col)
+
+                if(hasattr(self, 'account_id')):
+                    if col["account_id"] == self.account_id:
+                        col["balance_checking"] = str(self.balance_checking)
 
 
         with open("./bank.csv", 'w', newline='') as csvfile:
