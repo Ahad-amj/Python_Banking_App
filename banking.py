@@ -274,7 +274,7 @@ class Operation:
                     
                 else:
                     print("Invalid account type!")
-                    
+
                 self.update_new_balance()
             else:
                 print("Invalid number! Please enter 1 or 2")
@@ -288,46 +288,69 @@ class Operation:
                 print("Your account has been deactivated due to overdrafts. Please deposit enough money to reactivate it. ")
                 return
 
-        user_transfer = input("Enter the acount id you want to deposite to: ")
+        user_transfer = input("Enter the acount id you want to transfer to: ")
+        
         if self.account.account_id == user_transfer:
             try:
                 user_trans = int(input("Choose the account type that you want to transfer to\n1- saving\n2- checking\n"))
                 trans_amount = float(input("How much money do you want to transfer? "))
-
+                
                 if self.account.balance_savings is not None and self.account.balance_checking is not None:
                     if user_trans == 1:
                         self.account.balance_savings += trans_amount
                         self.account.balance_checking -= trans_amount
 
                         print(f"you have successfully transfer {trans_amount} from checking account to saving account\nYour acount now has {self.account.balance_savings} in saving balance\n{self.account.balance_checking} in checking account.")
-                        self.update_new_balance()
-
+                        
                     elif user_trans == 2:
                         self.account.balance_checking += trans_amount
                         self.account.balance_savings -= trans_amount
 
                         print(f"you have successfully transfer {trans_amount} from saving account to checking account\nYour acount now has {self.account.balance_savings} in saving balance\n{self.account.balance_checking} in checking account.")
-                        self.update_new_balance()
+
                     else:
                         print("Invalid input!! Please choose 1 or 2")
+                    self.update_new_balance()
                 else:
                     print("You just have one account\nYou can not transfer to yourself")
 
             except ValueError:
                     print("Invalid input!! Please enter a valid number.")
-        # else:
-        #     try:
-        #         with open("bank.csv", "r") as bank:
-        #         data = csv.DictReader(bank)
-        #         for col in data:
-        #             if col["account_id"] == user_transfer:
-        #                 self.balance_checking = convert_acct_balance_info(col["balance_checking"])
-        #                 self.balance_savings = convert_acct_balance_info(col["balance_savings"])
-        #                 break
-        
+        else:
+            try:
+                with open("bank.csv", "r") as bank:
+                    data = csv.DictReader(bank)
+                    for col in data:
+                        if col["account_id"] == user_transfer:
+                            self.first_name = col["frst_name"]
+                            self.last_name = col["last_name"]
+                            self.balance_checking = convert_acct_balance_info(col["balance_checking"])
+                            break
+                    user_trans_others = int(input("Choose the account type that you want to do the transfer by\n1-  saving\n2- checking\n"))
+                    amount_to_others = float(input("How much money do you want to transfer? "))
+                    if user_trans_others == 1 or user_trans_others == 2:
+                        if user_trans_others == 1 and self.account.balance_savings is not None:
+                            self.balance_checking += amount_to_others
+                            self.account.balance_savings -= amount_to_others
+                            print(f"you have successfully transfer {amount_to_others} from your saving account to {self.  first_name} {self.last_name} account!\nYour acount now has {self.account.balance_savings} in  saving balance.")
+                            print(f"{self.first_name} {self.last_name} account now has {self.balance_checking} in checking balance.")
 
-            
-            
+                        elif user_trans_others == 2 and self.account.balance_checking is not None:
+                            self.balance_checking += amount_to_others
+                            self.account.balance_checking -= amount_to_others
+                            print(f"you have successfully transfer {amount_to_others} from your checking account to {self.first_name} {self.last_name} account!\nYour acount now has {self.account.balance_checking} in checking balance.")
+                            print(f"{self.first_name} {self.last_name} account now has {self.balance_checking} in checking balance.")
+
+                        else:
+                            print("Your account type is incorrect!")
+
+                        self.update_new_balance()
+
+                    else:
+                        print("Invalid input!! Please choose 1 or 2")    
+            except ValueError:
+                    print("Invalid input!! Please enter a valid number.")
+                          
 
         
     def update_new_balance(self):
@@ -339,8 +362,9 @@ class Operation:
                     col["balance_savings"] = str(self.account.balance_savings)
                     col["balance_checking"] = str(self.account.balance_checking)
                     col["account_status"] = self.account.account_status 
-                    col["count_overdraft"] = self.account.count_overdraft
+                    col["count_overdraft"] = self.account.count_overdraft 
                 updated.append(col)
+
 
         with open("./bank.csv", 'w', newline='') as csvfile:
             try:
@@ -351,6 +375,7 @@ class Operation:
             except csv.Error as e:
                 print(e)
 
+    
 
 
 customer=Customer()
