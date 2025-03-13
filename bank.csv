@@ -1,8 +1,9 @@
 account_id,frst_name,last_name,password,balance_checking,balance_savings,account_status,count_overdraft
-1,suresh,sigera,1,6000.0,1271.0,active,0
+1,suresh,sigera,1,5580.0,1780.0,active,0
 10002,james,taylor,idh36%@#FGd,22600.0,2100.0,active,0
-10003,melvin,gordon,uYWE732g4ga1,3000.0,20000,active,0
-10004,stacey,abrams,DEU8_qw3y72$,2000,20000,active,0
+10003,melvin,gordon,uYWE732g4ga1,4000.0,20000,active,0
+10004,stacey,abrams,DEU8_qw3y72$,2020.0,20000,active,0
 10005,jake,paul,d^dg23g)@,99880.0,99280.0,active,0
-10006,fatemah,mohammed,vhdjksb7,190.0,None,active,0
+10006,fatemah,mohammed,vhdjksb7,45.0,None,active,1
 10007,sameer,salman,dnjweh8,1000.0,,active,0
+10008,yara,aziz,hbwej7,1000.0,20000.0,active,0
