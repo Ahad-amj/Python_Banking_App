@@ -45,7 +45,6 @@ class Bank:
 class Customer:
 
     def __init__(self):
-
         bank_csv = open("bank.csv", "r")
         last_account = bank_csv.readlines()[-1]
         last_account = last_account.split(",")
@@ -54,7 +53,6 @@ class Customer:
         self.fieldnames = ["account_id", "frst_name", "last_name", "password", "balance_checking", "balance_savings","account_status","count_overdraft"]
 
     def new_customer(self):
-
         try:
             user_response=int(input("Hello! Welcome to the Bank\nChoose 1 or 2:\n1- Log in\n2- Create an account\n"))
             if user_response == 1:
@@ -111,7 +109,6 @@ class Customer:
 class Account:
 
     def __init__(self):
-
         self.account_id = None
         self.first_name = None
         self.last_name = None
@@ -120,11 +117,8 @@ class Account:
         self.balance_savings = None
         self.account_status = 'active'
         self.count_overdraft = 0
-        
-        
      
     def log_in(self):
-
         with open("bank.csv", "r") as bank:
             data = csv.DictReader(bank)
             check_acct_num = True
@@ -187,123 +181,76 @@ class Account:
 
 
 class Operation:
-    def __init__(self, account):
 
+    def __init__(self, account):
         self.account = account
         self.fieldnames = ["account_id", "frst_name", "last_name", "password", "balance_checking", "balance_savings","account_status","count_overdraft"]
        
-
     def withdraw(self):
-
         try:
-            withdraw_account = { "1": "balance_savings", "2": "balance_checking" }
-            allow_withdraw = True
-            user_withdraw = None
-
-
             if self.account.account_status == "deactivated":
-                allow_withdraw = False
-                print("Your account has been deactivated due to overdrafts. Please deposit enough money to reactivate it. ")
-            
-            while user_withdraw != "1" and user_withdraw != "2":
-                user_withdraw = input("Do you want to withdraw from savings or checking balance?\n1- withdraw from saving balance\n2- withdraw from checking balance\n")
+                print("Your account has been deactivated due to overdrafts. Please deposit enough money to reactivate it.")
+                return
 
-            # user_withdraw_amount = 0.00
-            # while type(user_withdraw_amount) != "float" or user_withdraw_amount < 0 or user_withdraw_amount > 100:
-            #     user_withdraw_amount = input("How much money do you want to withdraw? ")
-            #     try:
-            #         user_withdraw_amount = float(user_withdraw_amount)
-            #     except ValueError:
-            #         print("You must enter a real number")
-            
-            user_withdraw_amount = 0.00
-            while True:
-                user_withdraw_amount = input("How much money do you want to withdraw? ")
-                try:
-                    user_withdraw_amount = float(user_withdraw_amount)
-                    if user_withdraw_amount < 0 or user_withdraw_amount > 100:
-                        print("Amount must be between 0 and 100.")
-                    else:
-                        break
-                except ValueError:
-                    print("You must enter a real number")
-            
-                
-            # check account is not None / has been created
-            if self.account[withdraw_account[user_withdraw]] is None:
-                print("please create an account")
-                allow_withdraw = False
+            user_withdraw = int(input("Do you want to withdraw from savings or checking balance?\n1- withdraw from saving balance\n2- withdraw from checking balance\n"))
 
-            if allow_withdraw and self.account[withdraw_account[user_withdraw]] is not None: 
+            if user_withdraw == 1 or user_withdraw == 2:
+                user_withdraw_amount = float(input("How much money do you want to withdraw? "))
 
-                if user_withdraw_amount <= self.account[withdraw_account[user_withdraw]]:
+                if user_withdraw == 1 and self.account.balance_savings is not None:
+                    if user_withdraw_amount <= 100:
 
-                    self.account[withdraw_account[user_withdraw]] -= user_withdraw_amount
-                    print(f"Withdraw {user_withdraw_amount} from {withdraw_account[user_withdraw]}. Your new balance is {self.account[withdraw_account[user_withdraw]]} .")
+                        if self.account.balance_savings - user_withdraw_amount < -100:
+                            print("Withdrawal denied. Your savings account balance cannot go below -100.")
+                            return
 
-                elif user_withdraw_amount > self.account[withdraw_account[user_withdraw]] and self.account.count_overdraft != 2:
+                        self.account.balance_savings -= user_withdraw_amount
+                        if self.account.balance_savings < 0:
+                            self.account.balance_savings -= 35
+                            print(f"Your savings account balance went negative. A fee of 35 has been applied.")
+                        print(f"Withdraw {user_withdraw_amount} from saving. Your new saving balance now is {self.account.balance_savings}.")
 
-                    if self.account[withdraw_account[user_withdraw]] - user_withdraw_amount >= -100:
-
-                        self.account[withdraw_account[user_withdraw]] -= user_withdraw_amount
-                        self.account[withdraw_account[user_withdraw]] -= 35
-                        print(f"Withdraw {user_withdraw_amount} from saving.Your acount balance is negative you will get a fee of 35. Yoursavings account is overdrafted.\nYour new saving balance now is {self.account[withdraw_account[user_withdraw]]} .")
-                        self.account.count_overdraft += 1
+                        if self.account.balance_savings < 0:
+                            self.account.count_overdraft += 1
+                            if self.account.count_overdraft > 2:
+                                self.account.account_status = "deactivated"
+                                print("Your account has been deactivated due to multiple overdrafts.") 
 
                     else:
-                        print("Withdrawal denied. This would cause your balance to fall below the allowed -100 limit.")
+                        print("You can't withdraw more than 100.")
 
-                if self.account.count_overdraft > 2:
+                elif user_withdraw == 2 and self.account.balance_checking is not None:
+                    if user_withdraw_amount <= 100:
 
-                   self.account.account_status = "deactivated"
-                   print("Your account has been deactivated due to multiple overdrafts.") 
+                        if self.account.balance_checking - user_withdraw_amount < -100:
+                            print("Withdrawal denied. Your checking account balance cannot go below -100.")
+                            return
 
+                        self.account.balance_checking -= user_withdraw_amount
+                        if self.account.balance_checking < 0:
+                            self.account.balance_checking -= 35
+                            print(f"Your checking account balance went negative. A fee of 35 has been applied.")
 
+                        print(f"Withdraw {user_withdraw_amount} from checking. Your new checking balance now is {self.account.balance_checking}.")
 
-            # # check if user account can be withdrawn from
-            # if self.account[withdraw_account[user_withdraw]] > 0:
-            #     self.account[withdraw_account[user_withdraw]] -= user_withdraw_amount
-            #     print(f"Withdraw {user_withdraw_amount} from saving. Your new saving balance now is {self.account[withdraw_account[user_withdraw]]} .")
+                        if self.account.balance_checking < 0:
+                           self.account.count_overdraft += 1
+                           if self.account.count_overdraft > 2:
+                              self.account.account_status = "deactivated"
+                              print("Your account has been deactivated due to multiple overdrafts.") 
+                    else:
+                        print("You can't withdraw more than 100.")
+                else:
+                    print("The user does not have an account.")
 
-            # # check if ....
-            # if user_withdraw_amount > self.account[withdraw_account[user_withdraw]] and self.account.count_overdraft != 2:
-            #     self.account[withdraw_account[user_withdraw]] -= user_withdraw_amount
-            #     self.account[withdraw_account[user_withdraw]] -= 35
-            #     print(f"Withdraw {user_withdraw_amount} from saving.Your acount balance is negative you will get a fee of 35. Yoursavings account is overdrafted.\nYour new saving balance now is {self.account[withdraw_account[user_withdraw]]} .")
-            #     self.account.count_overdraft += 1
-            # else:
-            #     print("denied!")
+                self.update_new_balance()
 
-            # if self.account.count_overdraft > 2:
-            #     self.account.account_status = "deactivated"
-            #     print("Your account has been deactivated due to multiple overdrafts.") 
+            else:
+                print("Invalid input, choose 1 or 2.")
 
-
-                # elif user_withdraw == 2 and self.account.balance_checking is not None:
-                #     if user_withdraw_amount <= 100:
-
-                #         if self.account.balance_checking > 0:
-                #             self.account.balance_checking -= user_withdraw_amount
-                #             print(f"Withdraw {user_withdraw_amount} from checking. Your new checking balance now is {self.account.balance_checking} .")
-
-                #         if user_withdraw_amount > self.account.balance_checking:
-                #             self.account.balance_checking -= user_withdraw_amount
-                #             self.account.balance_checking -= 35
-                #             print(f"Withdraw {user_withdraw_amount} from checking.Your acount balance is negative you will get a fee of 35. Your checking account is overdrafted.\nYour new checking balance now is {self.account.balance_checking} .")
-
-                #             self.account.count_overdraft += 1
-                #             if self.account.count_overdraft > 2:
-                #                self.account.account_status = "deactivated"
-                #                print("Your account has been deactivated due to multiple overdrafts.") 
-            if allow_withdraw:
-               self.update_new_balance()
-            # else:
-            #     pass
-            # print all of the account issues that denied them withdraw
-       
         except ValueError:
-                    print("Invalid input!! Please enter a valid number.")
-    
+            print("Invalid input!! Please enter a valid number.")
+
 
     def deposite(self):
 
@@ -377,6 +324,7 @@ class Operation:
 
             except ValueError:
                     print("Invalid input!! Please enter a valid number.")
+                    
         else:
             account_found = False
             try:
@@ -390,6 +338,7 @@ class Operation:
                             self.balance_checking = convert_acct_balance_info(col["balance_checking"])
                             account_found = True
                             break
+
                     if not account_found:
                         print("Account ID not found. Please check the account ID and try again.")
                         return
