@@ -227,6 +227,7 @@ class Operation:
                             return
 
                         self.account.balance_savings -= user_withdraw_amount
+
                         if self.account.balance_savings < 0:
                             self.account.balance_savings -= 35
                             print(f"Your savings account balance went negative. A fee of 35 has been applied.")
@@ -251,6 +252,7 @@ class Operation:
                             return
 
                         self.account.balance_checking -= user_withdraw_amount
+                        
                         if self.account.balance_checking < 0:
                             self.account.balance_checking -= 35
                             print(f"Your checking account balance went negative. A fee of 35 has been applied.")
