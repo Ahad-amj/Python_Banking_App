@@ -1,5 +1,6 @@
 import csv
 import os
+import datetime
 
 
 def convert_acct_balance_info(info):
@@ -73,16 +74,16 @@ class Customer:
                 while repeat:
                     try:
                         if user_choice == 1:
-                           balance_savings = float(input("Enter you savings:   "))
+                           balance_savings = float(input("Enter you savings: "))
                            repeat=False  
 
                         elif user_choice == 2:
-                            balance_checking = float(input("Enter you checking:  "))
+                            balance_checking = float(input("Enter you checking: "))
                             repeat=False 
 
                         elif user_choice == 3 :
-                            balance_checking = float(input("Enter your checking:  "))
-                            balance_savings = float(input("Enter your savings:  "))
+                            balance_checking = float(input("Enter your checking: "))
+                            balance_savings = float(input("Enter your savings: "))
                             repeat=False
                         else:
                             print("Invalid input!! choose between 1, and 3.")
@@ -117,6 +118,29 @@ class Account:
         self.balance_savings = None
         self.account_status = 'active'
         self.count_overdraft = 0
+        self.transactions = []
+
+    def log_transactions(self, transaction_type, transaction_amount):
+        transaction_details = {
+            'transaction_type': transaction_type,
+            'transaction_amount': transaction_amount,
+            'transaction_date': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+        self.transactions.append(transaction_details)
+
+    @staticmethod  
+    def show_transaction_detail(account):
+        print(f"Transaction history for account id: {account.account_id}")
+    
+        if not account.transactions:
+           print("No transactions found.")
+           return
+    
+        last_transaction = account.transactions[-1]  
+        print(f"Transaction type: {last_transaction['transaction_type']}")
+        print(f"Transaction amount: {last_transaction['transaction_amount']}")
+        print(f"Transaction date: {last_transaction['transaction_date']}")
+
      
     def log_in(self):
         with open("bank.csv", "r") as bank:
@@ -178,8 +202,6 @@ class Account:
 
         
 
-
-
 class Operation:
 
     def __init__(self, account):
@@ -209,6 +231,8 @@ class Operation:
                             self.account.balance_savings -= 35
                             print(f"Your savings account balance went negative. A fee of 35 has been applied.")
                         print(f"Withdraw {user_withdraw_amount} from saving. Your new saving balance now is {self.account.balance_savings}.")
+                        self.account.log_transactions("Withdrawal", user_withdraw_amount)
+                        Account.show_transaction_detail(self.account)
 
                         if self.account.balance_savings < 0:
                             self.account.count_overdraft += 1
@@ -232,6 +256,8 @@ class Operation:
                             print(f"Your checking account balance went negative. A fee of 35 has been applied.")
 
                         print(f"Withdraw {user_withdraw_amount} from checking. Your new checking balance now is {self.account.balance_checking}.")
+                        self.account.log_transactions("Withdrawal", user_withdraw_amount)
+                        Account.show_transaction_detail(self.account)
 
                         if self.account.balance_checking < 0:
                            self.account.count_overdraft += 1
@@ -264,16 +290,19 @@ class Operation:
                 if user_deposite == 1 and self.account.balance_savings is not None:
                     self.account.balance_savings += user_deposite_amount
                     print(f"Deposite {user_deposite_amount} to saving. Your new saving balance now is {self.account.balance_savings} .")
+                    self.account.log_transactions("Deposite", user_deposite_amount)
+                    Account.show_transaction_detail(self.account)
 
                     if self.account.account_status == "deactivated" and self.account.balance_savings >0:
                         self.account.account_status = "active"
                         self.count_overdraft = 0
                         print("Your account has been reactivated!")
 
-
                 elif user_deposite == 2 and self.account.balance_checking is not None:
                     self.account.balance_checking += user_deposite_amount
                     print(f"Deposite {user_deposite_amount} to checking. Your new checking balance now is {self.account.balance_checking} .")
+                    self.account.log_transactions("Deposite", user_deposite_amount)
+                    Account.show_transaction_detail(self.account)
 
                     if self.account.account_status == "deactivated" and self.account.balance_checking >0:
                         self.account.account_status = "active"
@@ -309,12 +338,16 @@ class Operation:
                         self.account.balance_checking -= trans_amount
 
                         print(f"you have successfully transfer {trans_amount} from checking account to saving account\nYour acount now has {self.account.balance_savings} in saving balance\n{self.account.balance_checking} in checking account.")
+                        self.account.log_transactions("Transfer", trans_amount)
+                        Account.show_transaction_detail(self.account)
                         
                     elif user_trans == 2:
                         self.account.balance_checking += trans_amount
                         self.account.balance_savings -= trans_amount
 
                         print(f"you have successfully transfer {trans_amount} from saving account to checking account\nYour acount now has {self.account.balance_savings} in saving balance\n{self.account.balance_checking} in checking account.")
+                        self.account.log_transactions("Transfer", trans_amount)
+                        Account.show_transaction_detail(self.account)
 
                     else:
                         print("Invalid input!! Please choose 1 or 2")
@@ -324,7 +357,7 @@ class Operation:
 
             except ValueError:
                     print("Invalid input!! Please enter a valid number.")
-                    
+
         else:
             account_found = False
             try:
@@ -354,6 +387,8 @@ class Operation:
 
                             print(f"you have successfully transfer {amount_to_others} from your saving account to {self.  first_name} {self.last_name} account!\nYour acount now has {self.account.balance_savings} in  saving balance.")
                             print(f"{self.first_name} {self.last_name} account now has {self.balance_checking} in checking balance.")
+                            self.account.log_transactions("Transfer", amount_to_others)
+                            Account.show_transaction_detail(self.account)
 
                         elif user_trans_others == 2 and self.account.balance_checking is not None:
                             self.balance_checking += amount_to_others
@@ -361,6 +396,8 @@ class Operation:
 
                             print(f"you have successfully transfer {amount_to_others} from your checking account to {self.first_name} {self.last_name} account!\nYour acount now has {self.account.balance_checking} in checking balance.")
                             print(f"{self.first_name} {self.last_name} account now has {self.balance_checking} in checking balance.")
+                            self.account.log_transactions("Transfer", amount_to_others)
+                            Account.show_transaction_detail(self.account)
 
                         else:
                             print("Your account type is incorrect!")
@@ -372,6 +409,8 @@ class Operation:
 
             except ValueError:            
                 print("Invalid input!! Please enter a valid number.")
+
+    
                           
 
         
@@ -390,7 +429,6 @@ class Operation:
                 if(hasattr(self, 'account_id')):
                     if col["account_id"] == self.account_id:
                         col["balance_checking"] = str(self.balance_checking)
-
 
         with open("./bank.csv", 'w', newline='') as csvfile:
             try:
