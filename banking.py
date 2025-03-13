@@ -34,10 +34,10 @@ class Bank:
     try: 
         with open("bank.csv", "r") as file:
              contents = csv.DictReader(file)
-            #  for row in contents:
-            #      print(row) 
-            #      for prop in fieldnames:
-            #         print(row[prop]) 
+             for row in contents:
+                 print(row) 
+                 for prop in fieldnames:
+                    print(row[prop]) 
     except csv.Error as e:
         print(e)
         
